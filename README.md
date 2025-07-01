@@ -5,13 +5,14 @@ A RESTful API for managing blog posts built with Express.js, TypeScript, and Mon
 ## Features
 
 - **Blog Post Management**: Create, read, update, and delete blog posts
-- **RESTful API**: Full CRUD operations for blog posts
+- **User Management**: User registration, authentication, and authorization
+- **RESTful API**: Full CRUD operations for blog posts and users
 - **Validation**: Input validation using express-validator
 - **Error Handling**: Comprehensive error handling and logging
 - **CORS Support**: Configured for cross-origin requests from React frontend
 - **Rate Limiting**: Protection against abuse
-- **Security**: Helmet for security headers
-- **Testing**: Comprehensive test suite with Jest
+- **Security**: Helmet for security headers, JWT authentication
+- **Testing**: Comprehensive test suite with Jest (unit and integration tests)
 - **Docker Support**: Complete Docker setup with MongoDB
 
 ## Architecture
@@ -32,12 +33,27 @@ This API is part of a dual API architecture:
 - `PUT /posts/:id` - Update an existing blog post
 - `DELETE /posts/:id` - Delete a blog post
 
+### Users
+
+- `GET /users` - Get all users
+- `GET /users/:id` - Get a specific user
+- `POST /users` - Create a new user
+- `PUT /users/:id` - Update an existing user
+- `DELETE /users/:id` - Delete a user
+
+### Authentication
+
+- `POST /auth/login` - User login
+- `POST /auth/register` - User registration
+
 ### Health Check
 
 - `GET /health` - API health status
 - `GET /` - API information and available endpoints
 
-## Blog Post Schema
+## Data Schemas
+
+### Blog Post Schema
 
 ```typescript
 interface BlogPost {
@@ -45,6 +61,20 @@ interface BlogPost {
   title: string; // Required, 1-200 characters
   content: string; // Required, 1-10000 characters
   author: string; // Required, 1-100 characters
+  createdAt: Date; // Auto-generated
+  updatedAt: Date; // Auto-generated
+}
+```
+
+### User Schema
+
+```typescript
+interface User {
+  _id: string;
+  username: string; // Required, unique
+  email: string; // Required, unique
+  password: string; // Required, hashed
+  role: string; // Default: 'user'
   createdAt: Date; // Auto-generated
   updatedAt: Date; // Auto-generated
 }
@@ -108,7 +138,6 @@ PORT=3001
 
 # MongoDB Configuration
 MONGODB_URI=mongodb://admin:password@localhost:27017/blog_db?authSource=admin
-MONGODB_URI_TEST=mongodb://localhost:27017/blog-api-test
 
 # CORS Configuration
 CORS_ORIGIN=http://localhost:3000,https://varlopecar.github.io
@@ -274,23 +303,47 @@ pnpm start
 express-mongodb-app/
 ├── src/
 │   ├── controllers/          # Route controllers
-│   │   └── postController.ts # Blog post endpoints
-│   │   └── userController.ts  # User management endpoints
+│   │   ├── postController.ts # Blog post endpoints
+│   │   ├── userController.ts # User management endpoints
+│   │   └── authController.ts # Authentication endpoints
 │   ├── models/              # Database models
 │   │   ├── Post.ts          # Blog post model
+│   │   ├── User.ts          # User model
 │   │   └── index.ts         # Model exports
+│   ├── services/            # Business logic services
+│   │   ├── authService.ts   # Authentication service
+│   │   └── userService.ts   # User management service
+│   ├── providers/           # Data providers
+│   │   ├── authProvider.ts  # Authentication provider
+│   │   └── userProvider.ts  # User data provider
 │   ├── middleware/          # Express middleware
+│   │   ├── authMiddleware.ts # JWT authentication
+│   │   ├── adminMiddleware.ts # Admin role verification
+│   │   ├── errorMiddleware.ts # Error handling
+│   │   └── validationMiddleware.ts # Input validation
 │   ├── config/              # Configuration files
+│   │   ├── database.ts      # Database configuration
+│   │   ├── logger.ts        # Logging configuration
+│   │   └── index.ts         # Config exports
 │   ├── scripts/             # Utility scripts
 │   │   └── seed.ts          # Database seeding
 │   ├── app.ts               # Express app setup
 │   ├── routes.ts            # Route definitions
 │   └── server.ts            # Server entry point
 ├── test/                    # Test files
-│   └── post.test.ts         # Blog post tests
+│   ├── unit/                # Unit tests
+│   │   └── authService.test.ts # Authentication service tests
+│   ├── integration/         # Integration tests
+│   ├── post.test.ts         # Blog post API tests
+│   ├── setup.ts             # Test setup
+│   └── jest.setup.js        # Jest configuration
+├── logs/                    # Application logs
 ├── docker-compose.yml       # Docker services
 ├── Dockerfile               # Docker configuration
 ├── package.json             # Dependencies and scripts
+├── jest.config.js           # Jest configuration
+├── tsconfig.json            # TypeScript configuration
+├── .eslintrc.js             # ESLint configuration
 └── README.md                # This file
 ```
 
