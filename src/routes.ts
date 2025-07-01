@@ -1,7 +1,7 @@
 import { Router } from "express";
 import postRoutes from "./controllers/postController";
 
-const router = Router();
+const router: Router = Router();
 
 // Blog post routes
 router.use("/posts", postRoutes);
