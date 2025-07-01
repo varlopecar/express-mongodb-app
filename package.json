@@ -17,7 +17,8 @@
     "docker:down": "docker-compose down",
     "docker:build": "docker-compose build",
     "docker:logs": "docker-compose logs -f",
-    "seed": "ts-node src/scripts/seed.ts"
+    "seed": "ts-node src/scripts/seed.ts",
+    "test:apis": "ts-node src/scripts/test-apis.ts"
   },
   "keywords": [
     "express",
