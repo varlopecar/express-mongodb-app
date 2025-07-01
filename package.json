@@ -1,7 +1,7 @@
 {
-  "name": "express-mongodb-app",
+  "name": "blog-api",
   "version": "1.0.0",
-  "description": "Express.js application with MongoDB and TypeScript",
+  "description": "Blog API with Express.js, MongoDB and TypeScript",
   "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
@@ -11,13 +11,20 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint src/**/*.ts",
-    "lint:fix": "eslint src/**/*.ts --fix"
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "docker:logs": "docker-compose logs -f",
+    "seed": "ts-node src/scripts/seed.ts"
   },
   "keywords": [
     "express",
     "mongodb",
     "typescript",
-    "nodejs"
+    "nodejs",
+    "blog",
+    "api"
   ],
   "author": "",
   "license": "MIT",
@@ -51,6 +58,7 @@
     "mongodb-memory-server": "^10.1.4",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.3.3"
   },

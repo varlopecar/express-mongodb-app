@@ -1,20 +1,31 @@
 import { Router } from "express";
-import authRoutes from "./controllers/authController";
-import userRoutes from "./controllers/userController";
+import postRoutes from "./controllers/postController";
 
 const router = Router();
 
-// API routes
-router.use("/api/auth", authRoutes);
-router.use("/api/users", userRoutes);
+// Blog post routes
+router.use("/posts", postRoutes);
 
 // Health check endpoint
-router.get("/health", (req, res) => {
+router.get("/health", (_req, res) => {
   res.status(200).json({
     success: true,
-    message: "Server is running",
+    message: "Blog API Server is running",
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || "development",
+    environment: process.env["NODE_ENV"] || "development",
+  });
+});
+
+// Root endpoint
+router.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Blog API - Welcome to the Blog Posts API",
+    version: "1.0.0",
+    endpoints: {
+      posts: "/posts",
+      health: "/health",
+    },
   });
 });
 

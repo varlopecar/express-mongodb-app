@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: blog-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: blog_db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - blog-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 30s
+
+  blog-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blog-api
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGODB_URI: mongodb://admin:password@mongodb:27017/blog_db?authSource=admin
+      CORS_ORIGIN: http://localhost:3000,https://varlopecar.github.io
+      LOG_LEVEL: info
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - blog-network
+    volumes:
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 30s
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: blog-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: password
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - blog-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  blog-network:
+    driver: bridge

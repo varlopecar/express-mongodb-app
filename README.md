@@ -1,203 +1,298 @@
-# Express.js MongoDB Application
+# Blog API - Node.js + MongoDB
 
-A production-ready Express.js application with TypeScript, MongoDB, and comprehensive testing following best practices from [Sematext's Express.js Best Practices](https://sematext.com/blog/expressjs-best-practices/).
+A RESTful API for managing blog posts built with Express.js, TypeScript, and MongoDB. This API serves as the backend for the React frontend's blog functionality.
 
 ## Features
 
-- **TypeScript** - Full TypeScript support with strict type checking
-- **MongoDB** - Mongoose ODM with proper schema validation
-- **Authentication** - JWT-based authentication with bcrypt password hashing
-- **Security** - Helmet, CORS, rate limiting, and input validation
-- **Logging** - Structured logging with Winston
-- **Testing** - Jest with MongoDB memory server for testing
-- **Performance** - Gzip compression, proper error handling
-- **Code Quality** - ESLint, TypeScript strict mode
+- **Blog Post Management**: Create, read, update, and delete blog posts
+- **RESTful API**: Full CRUD operations for blog posts
+- **Validation**: Input validation using express-validator
+- **Error Handling**: Comprehensive error handling and logging
+- **CORS Support**: Configured for cross-origin requests from React frontend
+- **Rate Limiting**: Protection against abuse
+- **Security**: Helmet for security headers
+- **Testing**: Comprehensive test suite with Jest
+- **Docker Support**: Complete Docker setup with MongoDB
 
-## Project Structure
+## Architecture
 
+This API is part of a dual API architecture:
+
+1. **Python FastAPI + MySQL**: User management and authentication (separate repository)
+2. **Node.js + MongoDB**: Blog posts and content management (this repository)
+3. **React Frontend**: User interface that connects to both APIs
+
+## API Endpoints
+
+### Blog Posts
+
+- `GET /posts` - Get all blog posts (sorted by creation date)
+- `GET /posts/:id` - Get a specific blog post
+- `POST /posts` - Create a new blog post
+- `PUT /posts/:id` - Update an existing blog post
+- `DELETE /posts/:id` - Delete a blog post
+
+### Health Check
+
+- `GET /health` - API health status
+- `GET /` - API information and available endpoints
+
+## Blog Post Schema
+
+```typescript
+interface BlogPost {
+  _id: string;
+  title: string; // Required, 1-200 characters
+  content: string; // Required, 1-10000 characters
+  author: string; // Required, 1-100 characters
+  createdAt: Date; // Auto-generated
+  updatedAt: Date; // Auto-generated
+}
 ```
-src/
-├── config/          # Configuration files
-├── controllers/     # Route handlers with validation
-├── middleware/      # Custom middleware
-├── models/          # Mongoose models
-├── providers/       # Business logic layer
-├── services/        # Common business logic
-├── app.ts          # Express application setup
-├── routes.ts       # Route definitions
-└── server.ts       # Server entry point
-```
-
-## Prerequisites
-
-- Node.js 18+
-- MongoDB (local or cloud instance)
-- npm or yarn
 
 ## Installation
 
-1. Clone the repository:
-
 ```bash
+# Clone the repository
 git clone <repository-url>
 cd express-mongodb-app
-```
 
-2. Install dependencies:
+# Install dependencies
+pnpm install
 
-```bash
-npm install
-```
-
-3. Create environment file:
-
-```bash
+# Copy environment file
 cp env.example .env
+
+# Build the project
+pnpm run build
+
+# Start development server
+pnpm run dev
 ```
 
-4. Update the `.env` file with your configuration:
+## Docker Setup
+
+### Quick Start with Docker
+
+```bash
+# Start all services
+pnpm run docker:up
+
+# View logs
+pnpm run docker:logs
+
+# Stop services
+pnpm run docker:down
+```
+
+### Services
+
+- **MongoDB**: Database server (port 27017)
+- **Blog API**: Express.js server (port 3001)
+- **Mongo Express**: Database management UI (port 8081)
+
+### Access Points
+
+- **API**: http://localhost:3001
+- **Mongo Express**: http://localhost:8081 (admin/password)
+- **Health Check**: http://localhost:3001/health
+
+## Environment Variables
+
+Create a `.env` file based on `env.example`:
 
 ```env
+# Server Configuration
 NODE_ENV=development
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/express-app
+PORT=3001
+
+# MongoDB Configuration
+MONGODB_URI=mongodb://admin:password@localhost:27017/blog_db?authSource=admin
+MONGODB_URI_TEST=mongodb://localhost:27017/blog-api-test
+
+# CORS Configuration
+CORS_ORIGIN=http://localhost:3000,https://varlopecar.github.io
+
+# JWT Configuration (if needed for future features)
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES_IN=24h
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Logging
+LOG_LEVEL=info
 ```
 
 ## Development
 
-Start the development server:
-
 ```bash
-npm run dev
-```
+# Start development server
+pnpm run dev
 
-The server will start on `http://localhost:3000` with hot reload enabled.
+# Run tests
+pnpm test
 
-## Production
+# Run tests with coverage
+pnpm run test:coverage
 
-Build the application:
+# Run tests in watch mode
+pnpm run test:watch
 
-```bash
-npm run build
-```
+# Lint code
+pnpm run lint
 
-Start the production server:
+# Fix linting issues
+pnpm run lint:fix
 
-```bash
-npm start
+# Seed database with sample data
+pnpm run seed
 ```
 
 ## Testing
 
-Run all tests:
+The project includes comprehensive tests:
+
+- **Unit Tests**: API endpoint testing
+- **Integration Tests**: Database operations
+- **Validation Tests**: Input validation
+- **Error Handling Tests**: Error scenarios
+
+Run tests with:
 
 ```bash
-npm test
+# Run all tests
+pnpm test
+
+# Run with coverage
+pnpm run test:coverage
+
+# Run in watch mode
+pnpm run test:watch
 ```
 
-Run tests in watch mode:
+## API Examples
+
+### Create a Blog Post
 
 ```bash
-npm run test:watch
-```
-
-Generate coverage report:
-
-```bash
-npm run test:coverage
-```
-
-## API Endpoints
-
-### Authentication
-
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/profile` - Get user profile (requires auth)
-
-### Users (Admin only)
-
-- `GET /api/users` - Get all users with pagination
-- `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
-- `DELETE /api/users/:id` - Delete user
-
-### Health Check
-
-- `GET /health` - Server health check
-
-## Example API Usage
-
-### Register a new user
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
+curl -X POST http://localhost:3001/posts \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "user@example.com",
-    "password": "password123",
-    "name": "John Doe"
+    "title": "My First Blog Post",
+    "content": "This is the content of my first blog post...",
+    "author": "John Doe"
   }'
 ```
 
-### Login
+### Get All Blog Posts
 
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl http://localhost:3001/posts
+```
+
+### Get a Specific Blog Post
+
+```bash
+curl http://localhost:3001/posts/POST_ID
+```
+
+### Update a Blog Post
+
+```bash
+curl -X PUT http://localhost:3001/posts/POST_ID \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "user@example.com",
-    "password": "password123"
+    "title": "Updated Title",
+    "content": "Updated content...",
+    "author": "John Doe"
   }'
 ```
 
-### Get user profile (with token)
+### Delete a Blog Post
 
 ```bash
-curl -X GET http://localhost:3000/api/auth/profile \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+curl -X DELETE http://localhost:3001/posts/POST_ID
 ```
 
-## Best Practices Implemented
+## Integration with React Frontend
 
-Based on [Sematext's Express.js Best Practices](https://sematext.com/blog/expressjs-best-practices/):
+The React frontend is configured to connect to this API using the `VITE_BLOG_API_URL` environment variable. The frontend will:
 
-1. **Proper Project Structure** - Separation of concerns with controllers, providers, services, and models
-2. **Environment Configuration** - Using dotenv for environment variables
-3. **Security Middleware** - Helmet, CORS, rate limiting
-4. **Compression** - Gzip compression for better performance
-5. **Structured Logging** - Winston logger with proper formatting
-6. **Error Handling** - Centralized error handling middleware
-7. **Input Validation** - Express-validator for request validation
-8. **Authentication** - JWT tokens with proper middleware
-9. **Database Connection** - Proper MongoDB connection with error handling
-10. **Testing** - Comprehensive test suite with Jest
+- Fetch blog posts for the homepage
+- Display posts in a responsive grid
+- Allow deletion of posts (if needed)
 
-## Scripts
+## CORS Configuration
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build TypeScript to JavaScript
-- `npm start` - Start production server
-- `npm test` - Run tests
-- `npm run test:watch` - Run tests in watch mode
-- `npm run test:coverage` - Generate test coverage report
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint errors automatically
+The API is configured to accept requests from:
 
-## Environment Variables
+- `http://localhost:3000` (React development server)
+- `https://varlopecar.github.io` (GitHub Pages deployment)
 
-| Variable                  | Description               | Default                                 |
-| ------------------------- | ------------------------- | --------------------------------------- |
-| `NODE_ENV`                | Environment mode          | `development`                           |
-| `PORT`                    | Server port               | `3000`                                  |
-| `MONGODB_URI`             | MongoDB connection string | `mongodb://localhost:27017/express-app` |
-| `JWT_SECRET`              | JWT signing secret        | Required                                |
-| `JWT_EXPIRES_IN`          | JWT expiration time       | `24h`                                   |
-| `LOG_LEVEL`               | Logging level             | `info`                                  |
-| `RATE_LIMIT_WINDOW_MS`    | Rate limit window         | `900000` (15 min)                       |
-| `RATE_LIMIT_MAX_REQUESTS` | Rate limit max requests   | `100`                                   |
-| `CORS_ORIGIN`             | CORS allowed origin       | `http://localhost:3000`                 |
+## Security Features
+
+- **Helmet**: Security headers
+- **Rate Limiting**: Protection against abuse
+- **Input Validation**: Comprehensive validation
+- **CORS**: Controlled cross-origin access
+- **Error Handling**: Secure error responses
+
+## Logging
+
+The API uses Winston for logging with configurable log levels:
+
+- **Development**: Detailed logging
+- **Production**: Essential logs only
+
+## Deployment
+
+### Docker Deployment
+
+```bash
+# Build and start services
+pnpm run docker:up
+
+# View logs
+pnpm run docker:logs
+```
+
+### Manual Deployment
+
+```bash
+# Build the application
+pnpm run build
+
+# Start production server
+pnpm start
+```
+
+## Project Structure
+
+```
+express-mongodb-app/
+├── src/
+│   ├── controllers/          # Route controllers
+│   │   └── postController.ts # Blog post endpoints
+│   │   └── userController.ts  # User management endpoints
+│   ├── models/              # Database models
+│   │   ├── Post.ts          # Blog post model
+│   │   └── index.ts         # Model exports
+│   ├── middleware/          # Express middleware
+│   ├── config/              # Configuration files
+│   ├── scripts/             # Utility scripts
+│   │   └── seed.ts          # Database seeding
+│   ├── app.ts               # Express app setup
+│   ├── routes.ts            # Route definitions
+│   └── server.ts            # Server entry point
+├── test/                    # Test files
+│   └── post.test.ts         # Blog post tests
+├── docker-compose.yml       # Docker services
+├── Dockerfile               # Docker configuration
+├── package.json             # Dependencies and scripts
+└── README.md                # This file
+```
 
 ## Contributing
 
@@ -210,4 +305,4 @@ Based on [Sematext's Express.js Best Practices](https://sematext.com/blog/expres
 
 ## License
 
-MIT License
+This project is licensed under the MIT License.

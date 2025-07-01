@@ -9,10 +9,12 @@ import routes from "./routes";
 import { errorHandler, notFoundHandler } from "./middleware/errorMiddleware";
 import logger from "./config/logger";
 
-const app = express();
+const app: express.Application = express();
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB (skip in test environment)
+if (process.env["NODE_ENV"] !== "test") {
+  connectDB();
+}
 
 // Security middleware
 app.use(helmet());
@@ -22,6 +24,8 @@ app.use(
   cors({
     origin: config.corsOrigin,
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -37,7 +41,7 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use("/api/", limiter);
+app.use("/", limiter);
 
 // Compression middleware (gzip)
 app.use(compression());
@@ -47,7 +51,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Request logging
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   logger.info(`${req.method} ${req.url}`, {
     ip: req.ip,
     userAgent: req.get("User-Agent"),
