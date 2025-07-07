@@ -5,13 +5,12 @@ A RESTful API for managing blog posts built with Express.js, TypeScript, and Mon
 ## Features
 
 - **Blog Post Management**: Create, read, update, and delete blog posts
-- **User Management**: User registration, authentication, and authorization
-- **RESTful API**: Full CRUD operations for blog posts and users
+- **RESTful API**: Full CRUD operations for blog posts
 - **Validation**: Input validation using express-validator
 - **Error Handling**: Comprehensive error handling and logging
 - **CORS Support**: Configured for cross-origin requests from React frontend
 - **Rate Limiting**: Protection against abuse
-- **Security**: Helmet for security headers, JWT authentication
+- **Security**: Helmet for security headers
 - **Testing**: Comprehensive test suite with Jest (unit and integration tests)
 - **Docker Support**: Complete Docker setup with MongoDB
 
@@ -33,19 +32,6 @@ This API is part of a dual API architecture:
 - `PUT /posts/:id` - Update an existing blog post
 - `DELETE /posts/:id` - Delete a blog post
 
-### Users
-
-- `GET /users` - Get all users
-- `GET /users/:id` - Get a specific user
-- `POST /users` - Create a new user
-- `PUT /users/:id` - Update an existing user
-- `DELETE /users/:id` - Delete a user
-
-### Authentication
-
-- `POST /auth/login` - User login
-- `POST /auth/register` - User registration
-
 ### Health Check
 
 - `GET /health` - API health status
@@ -61,20 +47,6 @@ interface BlogPost {
   title: string; // Required, 1-200 characters
   content: string; // Required, 1-10000 characters
   author: string; // Required, 1-100 characters
-  createdAt: Date; // Auto-generated
-  updatedAt: Date; // Auto-generated
-}
-```
-
-### User Schema
-
-```typescript
-interface User {
-  _id: string;
-  username: string; // Required, unique
-  email: string; // Required, unique
-  password: string; // Required, hashed
-  role: string; // Default: 'user'
   createdAt: Date; // Auto-generated
   updatedAt: Date; // Auto-generated
 }
@@ -142,10 +114,6 @@ MONGODB_URI=mongodb://admin:password@localhost:27017/blog_db?authSource=admin
 # CORS Configuration
 CORS_ORIGIN=http://localhost:3000,https://varlopecar.github.io
 
-# JWT Configuration (if needed for future features)
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-JWT_EXPIRES_IN=24h
-
 # Rate Limiting
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
@@ -177,96 +145,41 @@ pnpm run lint:fix
 
 # Seed database with sample data
 pnpm run seed
+
+# Test API endpoints
+pnpm run test:apis
 ```
 
 ## Testing
 
-The project includes comprehensive tests:
+The project includes comprehensive testing:
 
-- **Unit Tests**: API endpoint testing
-- **Integration Tests**: Database operations
-- **Validation Tests**: Input validation
-- **Error Handling Tests**: Error scenarios
+### Unit Tests
+- Service layer tests
+- Utility function tests
 
-Run tests with:
+### Integration Tests
+- API endpoint tests
+- Database integration tests
 
-```bash
-# Run all tests
-pnpm test
+### Test Coverage
+- Run `pnpm run test:coverage` to generate coverage reports
+- Coverage reports are generated in the `coverage/` directory
 
-# Run with coverage
-pnpm run test:coverage
+## API Testing
 
-# Run in watch mode
-pnpm run test:watch
-```
-
-## API Examples
-
-### Create a Blog Post
+Use the built-in API testing script:
 
 ```bash
-curl -X POST http://localhost:3001/posts \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "My First Blog Post",
-    "content": "This is the content of my first blog post...",
-    "author": "John Doe"
-  }'
+# Test all API endpoints
+pnpm run test:apis
 ```
 
-### Get All Blog Posts
-
-```bash
-curl http://localhost:3001/posts
-```
-
-### Get a Specific Blog Post
-
-```bash
-curl http://localhost:3001/posts/POST_ID
-```
-
-### Update a Blog Post
-
-```bash
-curl -X PUT http://localhost:3001/posts/POST_ID \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Updated Title",
-    "content": "Updated content...",
-    "author": "John Doe"
-  }'
-```
-
-### Delete a Blog Post
-
-```bash
-curl -X DELETE http://localhost:3001/posts/POST_ID
-```
-
-## Integration with React Frontend
-
-The React frontend is configured to connect to this API using the `VITE_BLOG_API_URL` environment variable. The frontend will:
-
-- Fetch blog posts for the homepage
-- Display posts in a responsive grid
-- Allow deletion of posts (if needed)
-
-## CORS Configuration
-
-The API is configured to accept requests from:
-
-- `http://localhost:3000` (React development server)
-- `https://varlopecar.github.io` (GitHub Pages deployment)
-
-## Security Features
-
-- **Helmet**: Security headers
-- **Rate Limiting**: Protection against abuse
-- **Input Validation**: Comprehensive validation
-- **CORS**: Controlled cross-origin access
-- **Error Handling**: Secure error responses
+This script will:
+- Test all CRUD operations
+- Validate error handling
+- Test input validation
+- Clean up test data
 
 ## Logging
 
@@ -303,22 +216,11 @@ pnpm start
 express-mongodb-app/
 ├── src/
 │   ├── controllers/          # Route controllers
-│   │   ├── postController.ts # Blog post endpoints
-│   │   ├── userController.ts # User management endpoints
-│   │   └── authController.ts # Authentication endpoints
+│   │   └── postController.ts # Blog post endpoints
 │   ├── models/              # Database models
 │   │   ├── Post.ts          # Blog post model
-│   │   ├── User.ts          # User model
 │   │   └── index.ts         # Model exports
-│   ├── services/            # Business logic services
-│   │   ├── authService.ts   # Authentication service
-│   │   └── userService.ts   # User management service
-│   ├── providers/           # Data providers
-│   │   ├── authProvider.ts  # Authentication provider
-│   │   └── userProvider.ts  # User data provider
 │   ├── middleware/          # Express middleware
-│   │   ├── authMiddleware.ts # JWT authentication
-│   │   ├── adminMiddleware.ts # Admin role verification
 │   │   ├── errorMiddleware.ts # Error handling
 │   │   └── validationMiddleware.ts # Input validation
 │   ├── config/              # Configuration files
@@ -326,25 +228,21 @@ express-mongodb-app/
 │   │   ├── logger.ts        # Logging configuration
 │   │   └── index.ts         # Config exports
 │   ├── scripts/             # Utility scripts
-│   │   └── seed.ts          # Database seeding
+│   │   ├── seed.ts          # Database seeding
+│   │   └── test-apis.ts     # API testing
 │   ├── app.ts               # Express app setup
 │   ├── routes.ts            # Route definitions
 │   └── server.ts            # Server entry point
 ├── test/                    # Test files
-│   ├── unit/                # Unit tests
-│   │   └── authService.test.ts # Authentication service tests
-│   ├── integration/         # Integration tests
-│   ├── post.test.ts         # Blog post API tests
+│   ├── post.test.ts         # Post API tests
 │   ├── setup.ts             # Test setup
 │   └── jest.setup.js        # Jest configuration
-├── logs/                    # Application logs
 ├── docker-compose.yml       # Docker services
-├── Dockerfile               # Docker configuration
+├── Dockerfile               # Application container
 ├── package.json             # Dependencies and scripts
-├── jest.config.js           # Jest configuration
 ├── tsconfig.json            # TypeScript configuration
-├── .eslintrc.js             # ESLint configuration
-└── README.md                # This file
+├── jest.config.js           # Jest test configuration
+└── README.md                # Project documentation
 ```
 
 ## Contributing

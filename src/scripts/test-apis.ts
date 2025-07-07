@@ -6,7 +6,7 @@ import axios from "axios";
 dotenv.config();
 
 // API base URL - adjust this based on your server configuration
-const API_BASE_URL = process.env["API_BASE_URL"] || "http://localhost:3000";
+const API_BASE_URL = process.env["API_BASE_URL"] || "http://localhost:3001";
 
 // Test data for creating posts
 const testPosts = [
