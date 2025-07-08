@@ -10,15 +10,29 @@ const connectDB = async (): Promise<void> => {
   }
 
   try {
-    const mongoURI =
-      process.env["MONGODB_URI"] || "mongodb://localhost:27017/express-app";
-
+    const mongoURI = process.env["MONGODB_URI"] || "mongodb://localhost:27017/express-app";
+    
+    // Check if we're in a serverless environment
+    const isServerless = process.env['VERCEL'] || process.env['AWS_LAMBDA_FUNCTION_NAME'];
+    
     const options = {
-      maxPoolSize: 10, // Maintain up to 10 socket connections
-      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      bufferCommands: false, // Disable mongoose buffering
+      maxPoolSize: isServerless ? 1 : 10, // Reduce pool size for serverless
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      // Add retryWrites for better reliability
+      retryWrites: true,
+      // Add write concern for better durability
+      w: 'majority' as const,
+      // Add connection timeout
+      connectTimeoutMS: 10000,
     };
+
+    // Add specific options for Atlas connections
+    if (mongoURI.includes('mongodb.net')) {
+      options.retryWrites = true;
+      options.w = 'majority' as const;
+    }
 
     await mongoose.connect(mongoURI, options);
 
