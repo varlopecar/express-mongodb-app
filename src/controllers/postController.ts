@@ -34,6 +34,7 @@ router.get("/", async (_req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: "Internal server error",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
@@ -61,6 +62,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: "Internal server error",
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 });
