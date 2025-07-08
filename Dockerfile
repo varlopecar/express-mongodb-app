@@ -14,7 +14,7 @@ COPY pnpm-lock.yaml ./
 RUN npm install -g pnpm
 
 # Install dependencies
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --prod
 
 # Copy source code
 COPY . .
@@ -33,4 +33,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:3001/health || exit 1
 
 # Start the application
-CMD ["pnpm", "start"] 
+CMD ["node", "dist/server.js"] 
