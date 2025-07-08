@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import Post from "../models/Post";
 import logger from "../config/logger";
+import { ensureDBConnection } from "../config/database";
 
 const router: Router = Router();
 
@@ -24,6 +25,7 @@ const validatePost = [
 // GET /posts - Get all blog posts
 router.get("/", async (_req: Request, res: Response) => {
   try {
+    await ensureDBConnection();
     const posts = await Post.find().sort({ createdAt: -1 });
 
     logger.info("Retrieved all blog posts", { count: posts.length });
@@ -42,6 +44,7 @@ router.get("/", async (_req: Request, res: Response) => {
 // GET /posts/:id - Get a specific blog post
 router.get("/:id", async (req: Request, res: Response) => {
   try {
+    await ensureDBConnection();
     const post = await Post.findById(req.params["id"]);
 
     if (!post) {
@@ -70,6 +73,8 @@ router.get("/:id", async (req: Request, res: Response) => {
 // POST /posts - Create a new blog post
 router.post("/", validatePost, async (req: Request, res: Response) => {
   try {
+    await ensureDBConnection();
+    
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -109,6 +114,8 @@ router.post("/", validatePost, async (req: Request, res: Response) => {
 // PUT /posts/:id - Update a blog post
 router.put("/:id", validatePost, async (req: Request, res: Response) => {
   try {
+    await ensureDBConnection();
+    
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -155,6 +162,7 @@ router.put("/:id", validatePost, async (req: Request, res: Response) => {
 // DELETE /posts/:id - Delete a blog post
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
+    await ensureDBConnection();
     const deletedPost = await Post.findByIdAndDelete(req.params["id"]);
 
     if (!deletedPost) {

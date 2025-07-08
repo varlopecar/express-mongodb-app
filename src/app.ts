@@ -4,7 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import config from "./config";
-import connectDB from "./config/database";
+import connectDB, { isDBConnected } from "./config/database";
 import routes from "./routes";
 import { errorHandler, notFoundHandler } from "./middleware/errorMiddleware";
 import logger from "./config/logger";
@@ -16,7 +16,11 @@ app.set('trust proxy', 1);
 
 // Connect to MongoDB (skip in test environment)
 if (process.env["NODE_ENV"] !== "test") {
-  connectDB();
+  connectDB().then(() => {
+    logger.info("Database connection established");
+  }).catch((error) => {
+    logger.error("Failed to connect to database:", error);
+  });
 }
 
 // Security middleware
@@ -59,6 +63,22 @@ app.use((req, _res, next) => {
     ip: req.ip,
     userAgent: req.get("User-Agent"),
   });
+  next();
+});
+
+// Database connection check middleware (skip for health check)
+app.use((req, res, next) => {
+  if (req.path === '/health' || req.path === '/') {
+    return next();
+  }
+  
+  if (!isDBConnected() && process.env["NODE_ENV"] !== "test") {
+    return res.status(503).json({
+      success: false,
+      message: "Database connection not ready. Please try again in a moment.",
+    });
+  }
+  
   next();
 });
 
