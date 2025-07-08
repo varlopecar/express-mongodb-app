@@ -200,6 +200,57 @@ pnpm run docker:up
 pnpm run docker:logs
 ```
 
+### CI/CD Pipeline
+
+This project includes a GitHub Actions CI/CD pipeline that automatically:
+
+1. **Tests**: Runs linting, unit tests, and coverage reports
+2. **Builds**: Creates Docker images with proper tagging
+3. **Publishes**: Pushes images to Docker Hub
+4. **Deploys**: Deploys to staging and production environments
+
+#### Setup Required Secrets
+
+To use the CI/CD pipeline, you need to configure the following secrets in your GitHub repository:
+
+1. Go to your repository → Settings → Secrets and variables → Actions
+2. Add the following secrets:
+
+**Docker Hub Credentials:**
+- `DOCKER_HUB_USERNAME`: Your Docker Hub username
+- `DOCKER_HUB_TOKEN`: Your Docker Hub access token (not your password)
+
+**Optional - For Coverage Reports:**
+- `CODECOV_TOKEN`: Your Codecov token (if using Codecov for coverage reports)
+
+#### Docker Hub Token Setup
+
+1. Log in to Docker Hub
+2. Go to Account Settings → Security
+3. Create a new access token
+4. Copy the token and add it as `DOCKER_HUB_TOKEN` secret
+
+#### Workflow Features
+
+- **Automatic Testing**: Runs on every push and pull request
+- **Smart Tagging**: Creates tags based on branch, commit SHA, and semantic versions
+- **Caching**: Uses GitHub Actions cache for faster builds
+- **Multi-stage Deployment**: Separate staging and production environments
+- **Security**: Uses secrets for sensitive information
+
+#### Manual Deployment
+
+You can also manually trigger deployments:
+
+```bash
+# Build and push Docker image
+docker build -t your-username/express-mongodb-app .
+docker push your-username/express-mongodb-app
+
+# Deploy using docker-compose
+docker-compose up -d
+```
+
 ### Manual Deployment
 
 ```bash
