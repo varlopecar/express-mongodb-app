@@ -11,31 +11,40 @@ const samplePosts = [
   {
     title: "Welcome to Our Blog",
     content:
-      "This is the first blog post on our platform. We're excited to share interesting content with our readers. Stay tuned for more articles about technology, development, and best practices.",
+      "This is the first blog post on our platform. We're excited to share interesting content with our readers. " +
+      "Stay tuned for more articles about technology, development, and best practices.",
     author: "Admin Team",
   },
   {
     title: "Getting Started with React",
     content:
-      "React is a powerful JavaScript library for building user interfaces. In this post, we'll explore the basics of React components, state management, and hooks. Whether you're a beginner or experienced developer, there's something here for everyone.",
+      "React is a powerful JavaScript library for building user interfaces. In this post, we'll explore the basics of " +
+      "React components, state management, and hooks. Whether you're a beginner or experienced developer, there's " +
+      "something here for everyone.",
     author: "John Developer",
   },
   {
     title: "Docker Best Practices",
     content:
-      "Docker has revolutionized how we deploy applications. Learn about Docker best practices including multi-stage builds, security considerations, and optimization techniques. We'll cover everything from basic concepts to advanced deployment strategies.",
+      "Docker has revolutionized how we deploy applications. Learn about Docker best practices including multi-stage " +
+      "builds, security considerations, and optimization techniques. We'll cover everything from basic concepts to " +
+      "advanced deployment strategies.",
     author: "Sarah DevOps",
   },
   {
     title: "API Design Principles",
     content:
-      "Good API design is crucial for building scalable applications. We'll discuss RESTful principles, error handling, versioning strategies, and documentation best practices. These principles apply whether you're building microservices or monolithic applications.",
+      "Good API design is crucial for building scalable applications. We'll discuss RESTful principles, error " +
+      "handling, versioning strategies, and documentation best practices. These principles apply whether you're " +
+      "building microservices or monolithic applications.",
     author: "Mike Architect",
   },
   {
     title: "Testing Strategies for Modern Applications",
     content:
-      "Testing is an essential part of software development. We'll explore different testing strategies including unit tests, integration tests, and end-to-end tests. Learn how to implement comprehensive testing that gives you confidence in your code.",
+      "Testing is an essential part of software development. We'll explore different testing strategies including " +
+      "unit tests, integration tests, and end-to-end tests. Learn how to implement comprehensive testing that " +
+      "gives you confidence in your code.",
     author: "Lisa QA",
   },
 ];

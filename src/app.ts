@@ -4,7 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import config from "./config";
-import connectDB, { isDBConnected } from "./config/database";
+import connectDB from "./config/database";
 import routes from "./routes";
 import { errorHandler, notFoundHandler } from "./middleware/errorMiddleware";
 import logger from "./config/logger";
@@ -67,7 +67,7 @@ app.use((req, _res, next) => {
 });
 
 // Database connection check middleware (skip for health check and root)
-app.use((req, res, next) => {
+app.use((req, _res, next) => {
   if (req.path === '/health' || req.path === '/') {
     return next();
   }

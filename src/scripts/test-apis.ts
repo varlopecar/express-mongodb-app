@@ -6,14 +6,16 @@ import axios from "axios";
 dotenv.config();
 
 // API base URL - adjust this based on your server configuration
-const API_BASE_URL = process.env["API_BASE_URL"] || "http://localhost:3001";
+const API_BASE_URL = process.env["API_BASE_URL"] || 
+  "http://localhost:3001";
 
 // Test data for creating posts
 const testPosts = [
   {
     title: "API Testing Post 1",
     content:
-      "This is the first test post for API testing. It contains sample content to verify that our API endpoints are working correctly.",
+      "This is the first test post for API testing. It contains sample content to verify that our API endpoints " +
+      "are working correctly.",
     author: "API Tester",
   },
   {
@@ -25,7 +27,8 @@ const testPosts = [
   {
     title: "API Testing Post 3",
     content:
-      "This is the third test post for API testing. This will help us verify that multiple posts can be retrieved and managed.",
+      "This is the third test post for API testing. This will help us verify that multiple posts can be retrieved " +
+      "and managed.",
     author: "Another Tester",
   },
   {
@@ -37,7 +40,8 @@ const testPosts = [
   {
     title: "API Testing Post 5",
     content:
-      "This is the fifth test post for API testing. This completes our test dataset for comprehensive API testing.",
+      "This is the fifth test post for API testing. This completes our test dataset for comprehensive API " +
+      "testing.",
     author: "Final Tester",
   },
 ];
@@ -70,7 +74,7 @@ interface TestResult {
   test: string;
   status: "PASS" | "FAIL";
   message: string;
-  data?: any;
+  data?: unknown;
 }
 
 class APITester {
@@ -133,7 +137,7 @@ class APITester {
     test: string,
     status: "PASS" | "FAIL",
     message: string,
-    data?: any
+    data?: unknown
   ) {
     this.results.push({ test, status, message, data });
     logger.info(`[${status}] ${test}: ${message}`);
@@ -299,8 +303,10 @@ class APITester {
             "FAIL",
             "Invalid post was accepted"
           );
-        } catch (error: any) {
-          if (error.response && error.response.status === 400) {
+        } catch (error: unknown) {
+          if (error && typeof error === 'object' && 'response' in error && 
+              error.response && typeof error.response === 'object' && 'status' in error.response && 
+              error.response.status === 400) {
             this.addResult(
               `Validation Test: ${invalidPost.title || "Empty Title"}`,
               "PASS",
@@ -358,8 +364,10 @@ class APITester {
         "FAIL",
         "Should have returned 404"
       );
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error && 
+          error.response && typeof error.response === 'object' && 'status' in error.response && 
+          error.response.status === 404) {
         this.addResult(
           "Get Non-existent Post",
           "PASS",
@@ -389,8 +397,10 @@ class APITester {
         "FAIL",
         "Should have returned 404"
       );
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error && 
+          error.response && typeof error.response === 'object' && 'status' in error.response && 
+          error.response.status === 404) {
         this.addResult(
           "Update Non-existent Post",
           "PASS",
@@ -415,8 +425,10 @@ class APITester {
         "FAIL",
         "Should have returned 404"
       );
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error && 
+          error.response && typeof error.response === 'object' && 'status' in error.response && 
+          error.response.status === 404) {
         this.addResult(
           "Delete Non-existent Post",
           "PASS",
