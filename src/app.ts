@@ -66,19 +66,14 @@ app.use((req, _res, next) => {
   next();
 });
 
-// Database connection check middleware (skip for health check)
+// Database connection check middleware (skip for health check and root)
 app.use((req, res, next) => {
   if (req.path === '/health' || req.path === '/') {
     return next();
   }
   
-  if (!isDBConnected() && process.env["NODE_ENV"] !== "test") {
-    return res.status(503).json({
-      success: false,
-      message: "Database connection not ready. Please try again in a moment.",
-    });
-  }
-  
+  // Allow requests to proceed - let individual controllers handle connection
+  // The ensureDBConnection() function in controllers will handle connection issues
   next();
 });
 
