@@ -32,6 +32,12 @@ const connectDB = async (): Promise<void> => {
     if (mongoURI.includes('mongodb.net')) {
       options.retryWrites = true;
       options.w = 'majority' as const;
+      
+      // For serverless environments, add additional options
+      if (isServerless) {
+        options.maxPoolSize = 1;
+        options.bufferCommands = false;
+      }
     }
 
     await mongoose.connect(mongoURI, options);
