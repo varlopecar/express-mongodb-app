@@ -11,6 +11,9 @@ import logger from "./config/logger";
 
 const app: express.Application = express();
 
+// Trust the first proxy (required for correct client IP detection on Vercel, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Connect to MongoDB (skip in test environment)
 if (process.env["NODE_ENV"] !== "test") {
   connectDB();
